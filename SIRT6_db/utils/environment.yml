@@ -1,0 +1,17 @@
+name: sirt6db-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pandas
+  - numpy
+  - scanpy
+  - pyarrow
+  - r-base=4.4
+  - r-r6
+  - r-arrow
+  - r-dplyr
+  - bioconductor-summarizedexperiment

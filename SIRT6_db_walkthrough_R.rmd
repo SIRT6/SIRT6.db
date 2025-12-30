@@ -1,0 +1,75 @@
+---
+title: "SIRT6_db R Client Walkthrough"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading packages
+To use the SIRT6_db R client, you need to load the required packages first:
+```{r load_packages}
+library(arrow)
+library(dplyr)
+```
+
+## Initializing the SIRT6_db Client
+Source the client file (adjust the path as necessary):
+```{r source_client}
+base_path <- "./SIRT6/Aging/PrepareSirt6Metadata/SIRT6_db/"
+source(paste0(base_path, "utils/R_client.R"))
+```
+
+Initializing the SIRT6_db client:
+```{r init_client}
+db <- SIRT6db$new(db_path = base_path)
+```
+
+## Accessing Database Information
+```{r db_info}
+cat(paste("Database Version:", db$version(), "\n"))
+cat(paste("Available Species:", paste(db$available_species(), collapse = ", "), "\n"))
+```
+
+List all available experiments:
+```{r list_experiments}
+print(db$list_experiments())
+```
+
+## Querying Data
+You can query the database for specific data. For example, to get a specific experiment:
+```{r get_experiment}
+data <- db$load_dataset(species = "homo_sapiens", gse_id = "GSE213425")
+```
+
+Look what is inside the data object:
+```{r data_content}
+print(names(data))
+```
+
+Accessing the expression data content:
+```{r expression_content}
+head(data$expression)
+```
+
+Accessing the metadata:
+```{r samples_content}
+head(data$samples)
+```
+
+Filter lowly expressed genes using the following criteria: >=5 counts in >=40% samples, <=60% zeros
+```{r gene_filtering}
+filtered_data <- db$filter_low_expressed_genes(data, min_counts = 5, min_samples_pct = 0.4, max_zeros_pct = 0.6)
+```
+
+Create a SummarizedExperiment object for a downstream analysis
+```{r create_summarized_experiment}
+se <- db$get_summarized_experiment_object(filtered_data)
+se
+```
+
+## Session Info
+```{r session_info}
+sessionInfo()
+``` 

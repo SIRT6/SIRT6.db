@@ -1,6 +1,6 @@
-import { parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
+import { asyncBufferFromUrl, parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
 
-const REPO_RAW_ROOT = "https://raw.githubusercontent.com/SIRT6/SIRT6.db/main";
+const REPO_RAW_ROOT = "https://cdn.jsdelivr.net/gh/SIRT6/SIRT6.db@main";
 
 const ORG = {
   drosophila_melanogaster: "Drosophila melanogaster",
@@ -141,7 +141,7 @@ async function readParquet(path) {
   const promise = new Promise(async (resolve, reject) => {
     const url = dataUrl(path);
     try {
-      const file = await remoteFile(url);
+      const file = await asyncBufferFromUrl({ url });
       const maybePromise = parquetRead({
         file,
         rowFormat: "object",
@@ -156,45 +156,6 @@ async function readParquet(path) {
   });
   state.cache.set(path, promise);
   return promise;
-}
-
-async function remoteFile(url) {
-  if (!url) throw new Error("Missing Parquet URL");
-  const byteLength = await fetchByteLength(url);
-  let fullDownload = null;
-  return {
-    byteLength,
-    async slice(start, end) {
-      if (fullDownload) {
-        const buffer = await fullDownload;
-        return buffer.slice(start, end);
-      }
-      const response = await fetch(url, {
-        headers: { Range: `bytes=${start}-${end === undefined ? "" : end - 1}` }
-      });
-      if (response.status === 206) return response.arrayBuffer();
-      if (response.ok) {
-        fullDownload = response.arrayBuffer();
-        const buffer = await fullDownload;
-        return buffer.slice(start, end);
-      }
-      throw new Error(`Could not load ${url}: HTTP ${response.status}`);
-    }
-  };
-}
-
-async function fetchByteLength(url) {
-  const head = await fetch(url, { method: "HEAD" });
-  if (head.ok) {
-    const length = head.headers.get("Content-Length");
-    if (length) return Number(length);
-  }
-  const response = await fetch(url, { headers: { Range: "bytes=0-0" } });
-  if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
-  const range = response.headers.get("Content-Range");
-  const match = range && range.match(/\/(\d+)$/);
-  if (match) return Number(match[1]);
-  return Number(response.headers.get("Content-Length")) || 0;
 }
 
 async function readText(path) {

@@ -128,6 +128,9 @@ function dataUrl(path) {
 
 function rootUrl(path) {
   const normalizedPath = path.replace(/^\/+/, "");
+  if (location.hostname.endsWith("github.io")) {
+    return `/SIRT6.db/${normalizedPath}`;
+  }
   return normalizedPath;
 }
 

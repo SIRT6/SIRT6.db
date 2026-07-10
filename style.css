@@ -280,7 +280,7 @@ label {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 760px;
+  min-width: 880px;
 }
 
 th,
@@ -314,6 +314,13 @@ tbody tr:hover {
   font-weight: 700;
 }
 
+.title-cell {
+  max-width: 34rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .up {
   color: var(--danger);
 }
@@ -324,29 +331,6 @@ tbody tr:hover {
 
 .ns {
   color: var(--muted);
-}
-
-.detail-panel {
-  margin-top: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 1rem;
-  background: #fbfdfe;
-}
-
-.detail-list {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.detail-item {
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.detail-item:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
 }
 
 .plot-shell {

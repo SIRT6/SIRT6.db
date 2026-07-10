@@ -251,64 +251,35 @@ function bindControls() {
 async function loadIndex() {
   try {
     setStatus("dataset-status", "Loading studies...");
-    const organismRows = await Promise.all(Object.keys(ORG).map(loadStudyRowsForOrganism));
-    state.indexRows = organismRows.flat().sort((a, b) => {
-      const organismCompare = a.organism.localeCompare(b.organism);
-      return organismCompare || a.study.localeCompare(b.study);
+    state.indexRows = await readParquet("indices/datasets_table.parquet");
+    state.indexRows.sort((a, b) => {
+      const organismCompare = String(a.organism || "").localeCompare(String(b.organism || ""));
+      return organismCompare || String(a.experiment_id || "").localeCompare(String(b.experiment_id || ""));
     });
     renderDatasets();
     setStatus("dataset-status", `${state.indexRows.length} studies`);
   } catch (error) {
     setStatus("dataset-status", "Studies failed");
-    $("#datasets-body").innerHTML = errorRow(8, error);
+    $("#datasets-body").innerHTML = errorRow(6, error);
   }
-}
-
-async function loadStudyRowsForOrganism(slug) {
-  const [experiments, samples, sampleLinks] = await Promise.all([
-    readParquet(`metadata/${slug}/experiments.parquet`),
-    readParquet(`metadata/${slug}/samples.parquet`),
-    readParquet(`metadata/${slug}/samples_to_experiment.parquet`)
-  ]);
-  const experimentById = firstRowBy(experiments, "experiment_id");
-  const sampleById = firstRowBy(samples, "sample_id");
-  const sampleIdsByStudy = new Map();
-  sampleLinks.forEach((row) => {
-    if (!sampleIdsByStudy.has(row.experiment_id)) sampleIdsByStudy.set(row.experiment_id, []);
-    sampleIdsByStudy.get(row.experiment_id).push(row.sample_id);
-  });
-  return Array.from(sampleIdsByStudy.entries()).map(([study, sampleIds]) => {
-    const experiment = experimentById.get(study) || {};
-    const studySamples = sampleIds.map((sampleId) => sampleById.get(sampleId)).filter(Boolean);
-    return {
-      study,
-      organism: experiment.organism || ORG[slug] || slug,
-      title: experiment.title || "No title available",
-      tissueCellType: summarizeTissueCellType(studySamples),
-      genotypes: joinUnique(studySamples.map((sample) => sample.genotype)),
-      sampleCount: sampleIds.length,
-      platform: experiment.instrument_model || "Not recorded"
-    };
-  });
 }
 
 function renderDatasets() {
   const query = $("#dataset-search").value.trim().toLowerCase();
   const rows = state.indexRows.filter((row) => {
-    const text = `${row.study} ${row.organism} ${row.title} ${row.tissueCellType} ${row.genotypes} ${row.platform}`.toLowerCase();
+    const text = `${row.experiment_id} ${row.organism} ${row.genotypes} ${row.system} ${row.title}`.toLowerCase();
     return !query || text.includes(query);
   });
   $("#datasets-body").innerHTML = rows.map((row) => {
+    const title = row.title || "";
     return `
       <tr>
-        <td><strong>${escapeHtml(row.study)}</strong></td>
+        <td><strong>${escapeHtml(row.experiment_id)}</strong></td>
         <td><em>${escapeHtml(row.organism)}</em></td>
-        <td>${escapeHtml(row.title)}</td>
-        <td>${escapeHtml(row.tissueCellType)}</td>
-        <td>${escapeHtml(row.genotypes)}</td>
-        <td>${formatNumber(row.sampleCount)}</td>
-        <td>${escapeHtml(row.platform)}</td>
-        <td>${geoLinks(row.study)}</td>
+        <td>${renderGenotypePills(row.genotypes)}</td>
+        <td>${escapeHtml(row.system || "Not recorded")}</td>
+        <td>${formatNumber(row.n_samples)}</td>
+        <td class="title-cell" title="${escapeAttr(title)}">${escapeHtml(title)}</td>
       </tr>
     `;
   }).join("");
@@ -569,7 +540,7 @@ function renderDownloads() {
     ["Expression matrices", EXPRESSION_FILES],
     ["Meta-analysis", ["meta/meta_results_KO.parquet", "meta/input_for_meta.parquet"]],
     ["Gene references", Object.keys(ORG).map((slug) => `genes/${slug}_genes.parquet`).concat(["genes/ortholog_map_1to1.parquet"])],
-    ["Indices and metadata", ["indices/experiment_stats.parquet", ...Object.keys(ORG).flatMap((slug) => [
+    ["Indices and metadata", ["indices/datasets_table.parquet", "indices/experiment_stats.parquet", ...Object.keys(ORG).flatMap((slug) => [
       `metadata/${slug}/samples.parquet`,
       `metadata/${slug}/experiments.parquet`,
       `metadata/${slug}/samples_to_experiment.parquet`
@@ -614,45 +585,19 @@ function setStatus(id, text) {
   $(`#${id}`).textContent = text;
 }
 
-function firstRowBy(rows, key) {
-  const map = new Map();
-  rows.forEach((row) => {
-    if (!map.has(row[key])) map.set(row[key], row);
-  });
-  return map;
-}
-
-function summarizeTissueCellType(samples) {
-  return joinUnique(samples.map((sample) => {
-    const tissue = cleanValue(sample.tissue);
-    const cellType = cleanValue(sample.cell_type);
-    if (tissue && cellType && tissue.toLowerCase() !== cellType.toLowerCase()) return `${tissue} / ${cellType}`;
-    return tissue || cellType;
-  }));
-}
-
-function joinUnique(values) {
-  const cleaned = unique(values.map(cleanValue).filter(Boolean));
-  return cleaned.length ? cleaned.join("; ") : "Not recorded";
-}
-
-function cleanValue(value) {
-  if (value == null) return "";
-  const text = String(value).trim();
-  return text && !["none", "nan", "null"].includes(text.toLowerCase()) ? text : "";
-}
-
-function geoLinks(study) {
-  const links = String(study).split(",").map((id) => id.trim()).filter((id) => /^GSE\d+$/i.test(id));
-  if (!links.length) return '<span class="muted">Not GEO</span>';
-  return links.map((id) => {
-    const href = `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${encodeURIComponent(id)}`;
-    return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener">${escapeHtml(id)}</a>`;
-  }).join(", ");
-}
-
 function unique(values) {
   return [...new Set(values)];
+}
+
+function renderGenotypePills(genotypes) {
+  const values = Array.isArray(genotypes)
+    ? genotypes
+    : String(genotypes || "Not recorded").split(/[;,]/);
+  return values
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => `<span class="pill">${escapeHtml(value)}</span>`)
+    .join(" ");
 }
 
 function directionLabel(log2FoldChange, significant) {

@@ -6,7 +6,7 @@
   <title>SIRT6.db</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=pages-root-20260710"></script>
+  <script type="module" src="app.js?v=datasets-table-20260710"></script>
 </head>
 <body>
   <header class="site-header">
@@ -44,7 +44,7 @@
       <div class="section-heading">
         <div>
           <h2 id="datasets-title">Datasets</h2>
-          <p>Browse source studies with sample-level tissue, cell type, genotype, and platform summaries.</p>
+          <p>Browse the source RNA-seq studies included in SIRT6.db.</p>
         </div>
         <span id="dataset-status" class="status">Loading studies...</span>
       </div>
@@ -55,14 +55,12 @@
         <table>
           <thead>
             <tr>
-              <th>Study (GSE ID)</th>
+              <th>Study</th>
               <th>Organism</th>
-              <th>Title</th>
+              <th>Genotypes</th>
               <th>Tissue / cell type</th>
-              <th>Genotypes present</th>
-              <th>Samples</th>
-              <th>Platform</th>
-              <th>Link to GEO</th>
+              <th>N samples</th>
+              <th>Title</th>
             </tr>
           </thead>
           <tbody id="datasets-body"></tbody>

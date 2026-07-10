@@ -1,7 +1,5 @@
 import { asyncBufferFromUrl, parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
 
-const REPO_RAW_BASE = "https://raw.githubusercontent.com/SIRT6/SIRT6.db/main";
-
 const ORG = {
   drosophila_melanogaster: "Drosophila melanogaster",
   homo_sapiens: "Homo sapiens",
@@ -125,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function dataUrl(path) {
-  return `${REPO_RAW_BASE}/SIRT6_db/${path}`;
+  return rootUrl(`SIRT6_db/${path}`);
 }
 
 function rootUrl(path) {
@@ -141,7 +139,6 @@ async function readParquet(path) {
   const promise = new Promise(async (resolve, reject) => {
     const url = dataUrl(path);
     try {
-      await assertParquetUrl(url);
       const file = await asyncBufferFromUrl({ url });
       const maybePromise = parquetRead({
         file,
@@ -157,19 +154,6 @@ async function readParquet(path) {
   });
   state.cache.set(path, promise);
   return promise;
-}
-
-async function assertParquetUrl(url) {
-  const response = await fetch(url, { headers: { Range: "bytes=0-3" } });
-  if (!response.ok) {
-    throw new Error(`Could not load Parquet file ${url} (${response.status})`);
-  }
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  const magic = new TextDecoder().decode(bytes.slice(0, 4));
-  if (magic !== "PAR1") {
-    const contentType = response.headers.get("content-type") || "unknown content type";
-    throw new Error(`Expected Parquet at ${url}, but received ${contentType}. Check the site path or deployment.`);
-  }
 }
 
 async function readText(path) {

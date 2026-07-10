@@ -1,4 +1,4 @@
-import { asyncBufferFromUrl, parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
+import { parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
 
 const ORG = {
   drosophila_melanogaster: "Drosophila melanogaster",
@@ -139,7 +139,11 @@ async function readParquet(path) {
   const promise = new Promise(async (resolve, reject) => {
     const url = dataUrl(path);
     try {
-      const file = await asyncBufferFromUrl({ url });
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Could not load Parquet file ${url} (${response.status})`);
+      }
+      const file = await response.arrayBuffer();
       const maybePromise = parquetRead({
         file,
         rowFormat: "object",

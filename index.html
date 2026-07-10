@@ -6,7 +6,7 @@
   <title>SIRT6.db</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=jsdelivr-20260709"></script>
+  <script type="module" src="app.js?v=datasets-20260710"></script>
 </head>
 <body>
   <header class="site-header">
@@ -44,28 +44,30 @@
       <div class="section-heading">
         <div>
           <h2 id="datasets-title">Datasets</h2>
-          <p>Browse harmonized organism-by-genotype sample groups and drill into source-study provenance.</p>
+          <p>Browse source studies with sample-level tissue, cell type, genotype, and platform summaries.</p>
         </div>
-        <span id="dataset-status" class="status">Loading index...</span>
+        <span id="dataset-status" class="status">Loading studies...</span>
       </div>
       <div class="table-toolbar">
-        <input id="dataset-search" type="search" placeholder="Filter organism or genotype">
+        <input id="dataset-search" type="search" placeholder="Filter study, organism, title, tissue, or genotype">
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
+              <th>Study (GSE ID)</th>
               <th>Organism</th>
-              <th>Genotype</th>
+              <th>Title</th>
+              <th>Tissue / cell type</th>
+              <th>Genotypes present</th>
               <th>Samples</th>
-              <th>Sample IDs</th>
-              <th>Source studies</th>
+              <th>Platform</th>
+              <th>Link to GEO</th>
             </tr>
           </thead>
           <tbody id="datasets-body"></tbody>
         </table>
       </div>
-      <div id="dataset-detail" class="detail-panel muted">Select "source studies" to load provenance for an organism.</div>
     </section>
 
     <section id="de" class="tab-panel" aria-labelledby="de-title">

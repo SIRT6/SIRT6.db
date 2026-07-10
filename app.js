@@ -1,7 +1,5 @@
 import { asyncBufferFromUrl, parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
 
-const REPO_RAW_ROOT = "https://cdn.jsdelivr.net/gh/SIRT6/SIRT6.db@main";
-
 const ORG = {
   drosophila_melanogaster: "Drosophila melanogaster",
   homo_sapiens: "Homo sapiens",
@@ -11,7 +9,6 @@ const ORG = {
   sus_scrofa: "Sus scrofa"
 };
 
-const DISPLAY_TO_SLUG = Object.fromEntries(Object.entries(ORG).map(([slug, label]) => [label, slug]));
 const TAB_IDS = new Set(["datasets", "de", "gene", "meta", "downloads", "methods", "about"]);
 
 const DE_FILES = [
@@ -131,10 +128,7 @@ function dataUrl(path) {
 
 function rootUrl(path) {
   const normalizedPath = path.replace(/^\/+/, "");
-  if (location.hostname.endsWith("github.io")) {
-    return `${REPO_RAW_ROOT}/${normalizedPath}`;
-  }
-  return `../${normalizedPath}`;
+  return normalizedPath;
 }
 
 async function readParquet(path) {
@@ -253,67 +247,68 @@ function bindControls() {
 
 async function loadIndex() {
   try {
-    setStatus("dataset-status", "Loading index...");
-    state.indexRows = await readParquet("indices/experiment_stats.parquet");
+    setStatus("dataset-status", "Loading studies...");
+    const organismRows = await Promise.all(Object.keys(ORG).map(loadStudyRowsForOrganism));
+    state.indexRows = organismRows.flat().sort((a, b) => {
+      const organismCompare = a.organism.localeCompare(b.organism);
+      return organismCompare || a.study.localeCompare(b.study);
+    });
     renderDatasets();
-    setStatus("dataset-status", `${state.indexRows.length} groups`);
+    setStatus("dataset-status", `${state.indexRows.length} studies`);
   } catch (error) {
-    setStatus("dataset-status", "Index failed");
-    $("#datasets-body").innerHTML = errorRow(5, error);
+    setStatus("dataset-status", "Studies failed");
+    $("#datasets-body").innerHTML = errorRow(8, error);
   }
+}
+
+async function loadStudyRowsForOrganism(slug) {
+  const [experiments, samples, sampleLinks] = await Promise.all([
+    readParquet(`metadata/${slug}/experiments.parquet`),
+    readParquet(`metadata/${slug}/samples.parquet`),
+    readParquet(`metadata/${slug}/samples_to_experiment.parquet`)
+  ]);
+  const experimentById = firstRowBy(experiments, "experiment_id");
+  const sampleById = firstRowBy(samples, "sample_id");
+  const sampleIdsByStudy = new Map();
+  sampleLinks.forEach((row) => {
+    if (!sampleIdsByStudy.has(row.experiment_id)) sampleIdsByStudy.set(row.experiment_id, []);
+    sampleIdsByStudy.get(row.experiment_id).push(row.sample_id);
+  });
+  return Array.from(sampleIdsByStudy.entries()).map(([study, sampleIds]) => {
+    const experiment = experimentById.get(study) || {};
+    const studySamples = sampleIds.map((sampleId) => sampleById.get(sampleId)).filter(Boolean);
+    return {
+      study,
+      organism: experiment.organism || ORG[slug] || slug,
+      title: experiment.title || "No title available",
+      tissueCellType: summarizeTissueCellType(studySamples),
+      genotypes: joinUnique(studySamples.map((sample) => sample.genotype)),
+      sampleCount: sampleIds.length,
+      platform: experiment.instrument_model || "Not recorded"
+    };
+  });
 }
 
 function renderDatasets() {
   const query = $("#dataset-search").value.trim().toLowerCase();
   const rows = state.indexRows.filter((row) => {
-    const text = `${row.organism} ${row.genotype}`.toLowerCase();
+    const text = `${row.study} ${row.organism} ${row.title} ${row.tissueCellType} ${row.genotypes} ${row.platform}`.toLowerCase();
     return !query || text.includes(query);
   });
   $("#datasets-body").innerHTML = rows.map((row) => {
-    const sampleIds = Array.isArray(row.sample_ids) ? row.sample_ids : [];
-    const firstIds = sampleIds.slice(0, 6).join(", ");
-    const more = sampleIds.length > 6 ? ` +${sampleIds.length - 6} more` : "";
-    const slug = DISPLAY_TO_SLUG[row.organism] || slugifyOrganism(row.organism);
     return `
       <tr>
+        <td><strong>${escapeHtml(row.study)}</strong></td>
         <td><em>${escapeHtml(row.organism)}</em></td>
-        <td><span class="pill">${escapeHtml(row.genotype)}</span></td>
-        <td>${formatNumber(row.counts)}</td>
-        <td>${escapeHtml(firstIds)}${more}</td>
-        <td><button class="secondary" type="button" data-detail="${slug}">Load source studies</button></td>
+        <td>${escapeHtml(row.title)}</td>
+        <td>${escapeHtml(row.tissueCellType)}</td>
+        <td>${escapeHtml(row.genotypes)}</td>
+        <td>${formatNumber(row.sampleCount)}</td>
+        <td>${escapeHtml(row.platform)}</td>
+        <td>${geoLinks(row.study)}</td>
       </tr>
     `;
   }).join("");
-  $$("[data-detail]").forEach((button) => {
-    button.addEventListener("click", () => loadDatasetDetail(button.dataset.detail));
-  });
-}
-
-async function loadDatasetDetail(slug) {
-  const panel = $("#dataset-detail");
-  panel.innerHTML = "Loading study metadata...";
-  try {
-    const rows = await readParquet(`metadata/${slug}/experiments.parquet`);
-    panel.innerHTML = `
-      <h3>${escapeHtml(ORG[slug] || slug)}</h3>
-      <div class="detail-list">
-        ${rows.map((row) => `
-          <article class="detail-item">
-            <strong>${escapeHtml(row.experiment_id || row.accession || "Experiment")}</strong>
-            <div>${escapeHtml(row.title || "No title available")}</div>
-            <div class="muted">${escapeHtml(row.instrument_model || "instrument not recorded")} - ${escapeHtml(row.library_strategy || "library strategy not recorded")}</div>
-            <details>
-              <summary>Protocol and summary</summary>
-              <p>${escapeHtml(row.summary || "No summary available")}</p>
-              <p>${escapeHtml(row.extract_protocol || row.growth_protocol || "No protocol text available")}</p>
-            </details>
-          </article>
-        `).join("")}
-      </div>
-    `;
-  } catch (error) {
-    panel.innerHTML = `<span class="up">${escapeHtml(error.message)}</span>`;
-  }
 }
 
 function populateContrastControls(scope = "all") {
@@ -616,8 +611,41 @@ function setStatus(id, text) {
   $(`#${id}`).textContent = text;
 }
 
-function slugifyOrganism(label) {
-  return String(label).toLowerCase().replaceAll(" ", "_");
+function firstRowBy(rows, key) {
+  const map = new Map();
+  rows.forEach((row) => {
+    if (!map.has(row[key])) map.set(row[key], row);
+  });
+  return map;
+}
+
+function summarizeTissueCellType(samples) {
+  return joinUnique(samples.map((sample) => {
+    const tissue = cleanValue(sample.tissue);
+    const cellType = cleanValue(sample.cell_type);
+    if (tissue && cellType && tissue.toLowerCase() !== cellType.toLowerCase()) return `${tissue} / ${cellType}`;
+    return tissue || cellType;
+  }));
+}
+
+function joinUnique(values) {
+  const cleaned = unique(values.map(cleanValue).filter(Boolean));
+  return cleaned.length ? cleaned.join("; ") : "Not recorded";
+}
+
+function cleanValue(value) {
+  if (value == null) return "";
+  const text = String(value).trim();
+  return text && !["none", "nan", "null"].includes(text.toLowerCase()) ? text : "";
+}
+
+function geoLinks(study) {
+  const links = String(study).split(",").map((id) => id.trim()).filter((id) => /^GSE\d+$/i.test(id));
+  if (!links.length) return '<span class="muted">Not GEO</span>';
+  return links.map((id) => {
+    const href = `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${encodeURIComponent(id)}`;
+    return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener">${escapeHtml(id)}</a>`;
+  }).join(", ");
 }
 
 function unique(values) {

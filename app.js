@@ -12,6 +12,7 @@ const ORG = {
 };
 
 const DISPLAY_TO_SLUG = Object.fromEntries(Object.entries(ORG).map(([slug, label]) => [label, slug]));
+const TAB_IDS = new Set(["datasets", "de", "gene", "meta", "downloads", "methods", "about"]);
 
 const DE_FILES = [
   "de/drosophila_melanogaster/GSE191320/GSE191320_Adult__10_days__SIRT6-OE_vs_WT_deseq2.parquet",
@@ -198,6 +199,12 @@ function bindNavigation() {
     const open = nav.classList.toggle("open");
     event.currentTarget.setAttribute("aria-expanded", String(open));
   });
+  $("[data-home-link]").addEventListener("click", (event) => {
+    event.preventDefault();
+    showHome();
+    history.replaceState(null, "", "#home");
+    nav.classList.remove("open");
+  });
   $$("[data-tab], [data-tab-link]").forEach((link) => {
     link.addEventListener("click", (event) => {
       const target = link.dataset.tab || link.dataset.tabLink;
@@ -208,14 +215,25 @@ function bindNavigation() {
       nav.classList.remove("open");
     });
   });
-  showTab(location.hash.replace("#", "") || "datasets");
+  const initialHash = location.hash.replace("#", "");
+  if (TAB_IDS.has(initialHash)) {
+    showTab(initialHash);
+  } else {
+    showHome();
+  }
 }
 
 function showTab(tab) {
-  const known = new Set(["datasets", "de", "gene", "meta", "downloads", "methods", "about"]);
-  const target = known.has(tab) ? tab : "datasets";
+  const target = TAB_IDS.has(tab) ? tab : "datasets";
+  $("#home").classList.remove("active");
   $$(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === target));
   $$("[data-tab]").forEach((link) => link.classList.toggle("active", link.dataset.tab === target));
+}
+
+function showHome() {
+  $("#home").classList.add("active");
+  $$(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+  $$("[data-tab]").forEach((link) => link.classList.remove("active"));
 }
 
 function bindControls() {

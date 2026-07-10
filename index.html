@@ -11,7 +11,7 @@
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="#datasets" aria-label="SIRT6.db">SIRT6.db</a>
+      <a class="brand" href="#home" aria-label="SIRT6.db" data-home-link>SIRT6.db</a>
       <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">Menu</button>
       <nav class="tabs" aria-label="Primary navigation">
         <a href="#datasets" data-tab="datasets">Datasets</a>
@@ -26,7 +26,7 @@
   </header>
 
   <main>
-    <section class="welcome">
+    <section id="home" class="welcome active">
       <div class="welcome-copy">
         <p class="eyebrow">Companion database for SIRT6-targeted omics</p>
         <h1>SIRT6 perturbation transcriptomics across species</h1>
@@ -40,7 +40,7 @@
       </div>
     </section>
 
-    <section id="datasets" class="tab-panel active" aria-labelledby="datasets-title">
+    <section id="datasets" class="tab-panel" aria-labelledby="datasets-title">
       <div class="section-heading">
         <div>
           <h2 id="datasets-title">Datasets</h2>

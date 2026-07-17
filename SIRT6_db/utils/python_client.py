@@ -17,9 +17,9 @@ class SIRT6db:
     def version(self) -> str:
         """
         Returns the version of the SIRT6_db.
-        Reads the version from the VERSION.txt file in the database root.
+        Reads the version from the version.txt file in the database root.
         """
-        version_file = self.db_path / "VERSION.txt"
+        version_file = self.db_path / "version.txt"
         if version_file.exists():
             try:
                 with open(version_file, 'r') as f:

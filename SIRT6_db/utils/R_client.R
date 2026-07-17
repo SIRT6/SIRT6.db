@@ -18,8 +18,8 @@ SIRT6db <- R6Class("SIRT6db",
     },
     
     version = function() {
-      "Returns the version of the SIRT6_db from the VERSION.txt file."
-      version_file <- file.path(self$db_path, "VERSION.txt")
+      "Returns the version of the SIRT6_db from the version.txt file."
+      version_file <- file.path(self$db_path, "version.txt")
       if (file.exists(version_file)) {
         tryCatch({
           return(readLines(version_file, warn = FALSE)[1])
@@ -127,4 +127,3 @@ SIRT6db <- R6Class("SIRT6db",
     }
   )
 )
-

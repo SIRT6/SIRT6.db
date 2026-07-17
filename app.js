@@ -264,18 +264,17 @@ async function loadIndex() {
     setStatus("dataset-status", `${state.indexRows.length} studies`);
   } catch (error) {
     setStatus("dataset-status", "Studies failed");
-    $("#datasets-body").innerHTML = errorRow(6, error);
+    $("#datasets-body").innerHTML = errorRow(5, error);
   }
 }
 
 function renderDatasets() {
   const query = $("#dataset-search").value.trim().toLowerCase();
   const rows = state.indexRows.filter((row) => {
-    const text = `${row.experiment_id} ${row.organism} ${row.genotypes} ${row.system} ${row.title}`.toLowerCase();
+    const text = `${row.experiment_id} ${row.organism} ${row.genotypes} ${row.system}`.toLowerCase();
     return !query || text.includes(query);
   });
   $("#datasets-body").innerHTML = rows.map((row) => {
-    const title = row.title || "";
     return `
       <tr>
         <td><strong>${escapeHtml(row.experiment_id)}</strong></td>
@@ -283,7 +282,6 @@ function renderDatasets() {
         <td>${renderGenotypePills(row.genotypes)}</td>
         <td>${escapeHtml(row.system || "Not recorded")}</td>
         <td>${formatNumber(row.n_samples)}</td>
-        <td class="title-cell" title="${escapeAttr(title)}">${escapeHtml(title)}</td>
       </tr>
     `;
   }).join("");

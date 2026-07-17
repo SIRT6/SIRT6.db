@@ -314,13 +314,6 @@ tbody tr:hover {
   font-weight: 700;
 }
 
-.title-cell {
-  max-width: 34rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .up {
   color: var(--danger);
 }

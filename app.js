@@ -277,7 +277,7 @@ function renderDatasets() {
   $("#datasets-body").innerHTML = rows.map((row) => {
     return `
       <tr>
-        <td><strong>${escapeHtml(row.experiment_id)}</strong></td>
+        <td><strong>${renderStudyLinks(row.experiment_id)}</strong></td>
         <td><em>${escapeHtml(row.organism)}</em></td>
         <td>${renderGenotypePills(row.genotypes)}</td>
         <td>${escapeHtml(row.system || "Not recorded")}</td>
@@ -600,6 +600,25 @@ function renderGenotypePills(genotypes) {
     .filter(Boolean)
     .map((value) => `<span class="pill">${escapeHtml(value)}</span>`)
     .join(" ");
+}
+
+function renderStudyLinks(experimentId) {
+  return String(experimentId || "")
+    .split(",")
+    .map((accession) => accession.trim())
+    .filter(Boolean)
+    .map((accession) => {
+      let href;
+      if (accession.startsWith("GSE")) {
+        href = `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${encodeURIComponent(accession)}`;
+      } else if (accession.startsWith("HRA")) {
+        href = `https://ngdc.cncb.ac.cn/gsa-human/browse/${encodeURIComponent(accession)}`;
+      }
+      return href
+        ? `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(accession)}</a>`
+        : escapeHtml(accession);
+    })
+    .join(", ");
 }
 
 function directionLabel(log2FoldChange, significant) {

@@ -318,13 +318,17 @@ function populateDeContrastSelect() {
   const slug = $("#de-species").value;
   const stratum = $("#de-stratum").value;
   const rows = state.contrasts.filter((item) => item.slug === slug && `${item.gse} - ${item.stratum || "all"}` === stratum);
-  $("#de-contrast").innerHTML = rows.map((item) => `<option value="${escapeAttr(item.path)}">${escapeHtml(item.label)}</option>`).join("");
+  $("#de-contrast").innerHTML = rows.map((item) => `<option value="${escapeAttr(item.path)}">${escapeHtml(item.contrast)}</option>`).join("");
 }
 
 function populateGeneContrastSelect() {
   const slug = $("#gene-species").value || Object.keys(ORG)[0];
   const rows = state.contrasts.filter((item) => item.slug === slug);
-  $("#gene-contrast").innerHTML = rows.map((item) => `<option value="${escapeAttr(item.path)}">${escapeHtml(item.label)}</option>`).join("");
+  $("#gene-contrast").innerHTML = rows.map((item) => {
+    const stratum = item.stratum.replaceAll("__", "; ").replaceAll("_", " ") || "all";
+    const label = `${item.gse} - ${stratum} - ${item.contrast}`;
+    return `<option value="${escapeAttr(item.path)}">${escapeHtml(label)}</option>`;
+  }).join("");
 }
 
 async function loadGeneMap(slug) {

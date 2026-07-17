@@ -640,15 +640,19 @@ function numeric(value, fallback = 0) {
 }
 
 function formatNumber(value) {
-  return Number(value || 0).toLocaleString();
+  if (value === null || value === undefined) return "NA";
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toLocaleString() : "NA";
 }
 
 function formatFixed(value, digits) {
+  if (value === null || value === undefined) return "NA";
   const number = Number(value);
   return Number.isFinite(number) ? number.toFixed(digits) : "NA";
 }
 
 function formatSci(value) {
+  if (value === null || value === undefined) return "NA";
   const number = Number(value);
   if (!Number.isFinite(number)) return "NA";
   if (number === 0) return "0";

@@ -1,4 +1,5 @@
 import { parquetRead } from "https://cdn.jsdelivr.net/npm/hyparquet/+esm";
+import { compressors } from "https://cdn.jsdelivr.net/npm/hyparquet-compressors/+esm";
 
 const ORG = {
   drosophila_melanogaster: "Drosophila melanogaster",
@@ -146,6 +147,7 @@ async function readParquet(path) {
       const file = await response.arrayBuffer();
       const maybePromise = parquetRead({
         file,
+        compressors,
         rowFormat: "object",
         onComplete: (rows) => resolve(rows)
       });

@@ -141,7 +141,7 @@ async function readParquet(path) {
   const promise = new Promise(async (resolve, reject) => {
     const url = dataUrl(path);
     try {
-      const response = await fetch(url);
+      const response = await fetchWithRetry(url);
       if (!response.ok) {
         throw new Error(`Could not load Parquet file ${url} (${response.status})`);
       }
@@ -160,7 +160,19 @@ async function readParquet(path) {
     }
   });
   state.cache.set(path, promise);
+  promise.catch(() => {
+    if (state.cache.get(path) === promise) state.cache.delete(path);
+  });
   return promise;
+}
+
+async function fetchWithRetry(url) {
+  try {
+    return await fetch(url);
+  } catch (error) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return fetch(url);
+  }
 }
 
 async function readText(path) {

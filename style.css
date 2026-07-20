@@ -300,6 +300,28 @@ th {
   font-size: 0.88rem;
 }
 
+.sort-button {
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  font-weight: inherit;
+}
+
+.sort-button:hover {
+  color: var(--accent-dark);
+  background: transparent;
+  text-decoration: underline;
+}
+
+th[aria-sort="ascending"] .sort-indicator::after {
+  content: " \25B2";
+}
+
+th[aria-sort="descending"] .sort-indicator::after {
+  content: " \25BC";
+}
+
 tbody tr:hover {
   background: #f8fbfc;
 }

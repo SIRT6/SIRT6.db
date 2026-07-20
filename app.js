@@ -106,6 +106,7 @@ const state = {
   indexRows: [],
   contrasts: DE_FILES.map(describeContrast),
   deRows: [],
+  deSort: { key: "padj", direction: "asc" },
   metaRows: [],
   metaInput: null,
   geneMaps: new Map()
@@ -245,6 +246,9 @@ function bindControls() {
   $("#de-stratum").addEventListener("change", () => populateDeContrastSelect());
   $("#load-de").addEventListener("click", loadDeTable);
   $("#de-search").addEventListener("input", renderDeTable);
+  $$('[data-de-sort]').forEach((button) => {
+    button.addEventListener("click", () => setDeSort(button.dataset.deSort));
+  });
   $("#gene-species").addEventListener("change", () => populateContrastControls("gene"));
   $("#plot-gene").addEventListener("click", plotGene);
   $("#gene-input").addEventListener("keydown", (event) => {
@@ -355,7 +359,7 @@ async function loadDeTable() {
     state.deRows = rows.map((row) => ({
       ...row,
       gene_symbol: geneMap.byId.get(String(row.gene_id)) || row.gene_id
-    })).sort((a, b) => numeric(a.padj, Infinity) - numeric(b.padj, Infinity));
+    }));
     renderDeTable();
     setStatus("de-status", `${formatNumber(state.deRows.length)} genes loaded`);
   } catch (error) {
@@ -369,7 +373,8 @@ function renderDeTable() {
   const rows = state.deRows.filter((row) => {
     if (!query) return true;
     return `${row.gene_symbol} ${row.gene_id}`.toLowerCase().includes(query);
-  });
+  }).sort(compareDeRows);
+  updateDeSortHeaders();
   $("#de-count").textContent = rows.length ? `Showing ${formatNumber(Math.min(rows.length, 500))} of ${formatNumber(rows.length)} matching genes` : "";
   $("#de-body").innerHTML = rows.slice(0, 500).map((row) => {
     const direction = directionLabel(row.log2FoldChange, row.significant);
@@ -384,6 +389,40 @@ function renderDeTable() {
       </tr>
     `;
   }).join("");
+}
+
+function setDeSort(key) {
+  if (state.deSort.key === key) {
+    state.deSort.direction = state.deSort.direction === "asc" ? "desc" : "asc";
+  } else {
+    state.deSort = { key, direction: "asc" };
+  }
+  renderDeTable();
+}
+
+function compareDeRows(a, b) {
+  const { key, direction } = state.deSort;
+  const aValue = finiteNumberOrNull(a[key]);
+  const bValue = finiteNumberOrNull(b[key]);
+  if (aValue === null && bValue === null) return 0;
+  if (aValue === null) return 1;
+  if (bValue === null) return -1;
+  return direction === "asc" ? aValue - bValue : bValue - aValue;
+}
+
+function finiteNumberOrNull(value) {
+  if (value === null || value === undefined) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function updateDeSortHeaders() {
+  $$('[data-de-sort-header]').forEach((header) => {
+    const active = header.dataset.deSortHeader === state.deSort.key;
+    header.setAttribute("aria-sort", active
+      ? (state.deSort.direction === "asc" ? "ascending" : "descending")
+      : "none");
+  });
 }
 
 async function plotGene() {

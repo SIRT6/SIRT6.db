@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIRT6.db</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=sortable-de-20260720">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=direction-labels-20260720"></script>
+  <script type="module" src="app.js?v=sortable-de-20260720"></script>
 </head>
 <body>
   <header class="site-header">
@@ -97,9 +97,9 @@
             <tr>
               <th>Gene symbol</th>
               <th>Gene ID</th>
-              <th>log2FC</th>
-              <th>p-value</th>
-              <th>FDR</th>
+              <th data-de-sort-header="log2FoldChange" aria-sort="none"><button class="sort-button" type="button" data-de-sort="log2FoldChange">log2FC<span class="sort-indicator" aria-hidden="true"></span></button></th>
+              <th data-de-sort-header="pvalue" aria-sort="none"><button class="sort-button" type="button" data-de-sort="pvalue">p-value<span class="sort-indicator" aria-hidden="true"></span></button></th>
+              <th data-de-sort-header="padj" aria-sort="ascending"><button class="sort-button" type="button" data-de-sort="padj">FDR<span class="sort-indicator" aria-hidden="true"></span></button></th>
               <th>Direction</th>
             </tr>
           </thead>

@@ -326,7 +326,10 @@ function fillSpeciesSelect(select) {
 function populateDeStrata() {
   const slug = $("#de-species").value || Object.keys(ORG)[0];
   const strata = unique(state.contrasts.filter((item) => item.slug === slug).map((item) => `${item.gse} - ${item.stratum || "all"}`));
-  $("#de-stratum").innerHTML = strata.map((label) => `<option value="${escapeAttr(label)}">${escapeHtml(label.replaceAll("_", " "))}</option>`).join("");
+  $("#de-stratum").innerHTML = strata.map((value) => {
+    const label = value.endsWith(" - all") ? value.slice(0, -6) : value.replaceAll("_", " ");
+    return `<option value="${escapeAttr(value)}">${escapeHtml(label)}</option>`;
+  }).join("");
   populateDeContrastSelect();
 }
 

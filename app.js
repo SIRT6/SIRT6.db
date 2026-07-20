@@ -629,7 +629,11 @@ function renderStudyLinks(experimentId) {
 
 function directionLabel(log2FoldChange, significant) {
   if (!significant) return { label: "not significant", className: "ns" };
-  return Number(log2FoldChange) >= 0
+  const foldChange = Number(log2FoldChange);
+  if (!Number.isFinite(foldChange) || Math.abs(foldChange) <= 0.58) {
+    return { label: "not significant", className: "ns" };
+  }
+  return foldChange > 0
     ? { label: "up in perturbation", className: "up" }
     : { label: "down in perturbation", className: "down" };
 }

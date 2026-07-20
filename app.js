@@ -361,7 +361,7 @@ async function loadDeTable() {
       gene_symbol: geneMap.byId.get(String(row.gene_id)) || row.gene_id
     }));
     renderDeTable();
-    setStatus("de-status", `${formatNumber(state.deRows.length)} genes loaded`);
+    setDeSummaryStatus();
   } catch (error) {
     setStatus("de-status", "DE load failed");
     $("#de-body").innerHTML = errorRow(6, error);
@@ -423,6 +423,22 @@ function updateDeSortHeaders() {
       ? (state.deSort.direction === "asc" ? "ascending" : "descending")
       : "none");
   });
+}
+
+function setDeSummaryStatus() {
+  let up = 0;
+  let down = 0;
+  state.deRows.forEach((row) => {
+    const direction = directionLabel(row.log2FoldChange, row.significant).className;
+    if (direction === "up") up += 1;
+    if (direction === "down") down += 1;
+  });
+  setStatus("de-status", [
+    `${formatNumber(state.deRows.length)} genes loaded`,
+    `${formatNumber(up + down)} DE genes`,
+    `${formatNumber(down)} Down`,
+    `${formatNumber(up)} Up`
+  ].join("\n"));
 }
 
 async function plotGene() {

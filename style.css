@@ -224,6 +224,10 @@ main {
   white-space: nowrap;
 }
 
+#de-status {
+  white-space: pre-line;
+}
+
 .muted {
   color: var(--muted);
 }

@@ -634,8 +634,8 @@ function directionLabel(log2FoldChange, significant) {
     return { label: "not significant", className: "ns" };
   }
   return foldChange > 0
-    ? { label: "up in perturbation", className: "up" }
-    : { label: "down in perturbation", className: "down" };
+    ? { label: "Up", className: "up" }
+    : { label: "Down", className: "down" };
 }
 
 function numeric(value, fallback = 0) {

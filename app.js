@@ -729,7 +729,7 @@ function formatSci(value) {
   if (value === null || value === undefined) return "NA";
   const number = Number(value);
   if (!Number.isFinite(number)) return "NA";
-  if (number === 0) return "0";
+  if (number === 0) return "< 1e-300";
   return number < 0.001 ? number.toExponential(2) : number.toPrecision(3);
 }
 

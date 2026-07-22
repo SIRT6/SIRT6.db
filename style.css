@@ -225,7 +225,12 @@ main {
 }
 
 #de-status {
+  min-width: 10rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  line-height: 1.5;
   white-space: pre-line;
+  flex-shrink: 0;
 }
 
 .muted {

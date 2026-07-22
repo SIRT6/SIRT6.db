@@ -121,24 +121,20 @@ main {
   padding: 1.2rem;
 }
 
-.home-view {
-  display: none;
-}
-
-.home-view.active {
-  display: block;
-}
-
 .welcome {
-  display: grid;
+  display: none;
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 1.2rem;
   align-items: stretch;
-  margin: 1rem 0 0;
+  margin: 1rem 0 1.4rem;
   padding: 2rem;
   background: linear-gradient(135deg, #eaf7f4, #f7fbfd);
   border: 1px solid #d7ece7;
   border-radius: 8px;
+}
+
+.welcome.active {
+  display: grid;
 }
 
 .welcome h1 {
@@ -184,11 +180,13 @@ main {
   font-weight: 700;
 }
 
-.datasets-figure {
-  max-width: 100%;
+.welcome-figure {
+  grid-column: 1 / -1;
+  max-width: 700px;
+  width: 100%;
   height: auto;
   display: block;
-  margin: 1.5rem auto 1.4rem;
+  margin: 1.5rem auto 0;
 }
 
 .tab-panel {

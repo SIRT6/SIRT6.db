@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIRT6.db</title>
-  <link rel="stylesheet" href="style.css?v=organisms-figure-20260722">
+  <link rel="stylesheet" href="style.css?v=plot-containers-20260722">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=organisms-figure-20260722"></script>
+  <script type="module" src="app.js?v=plot-containers-20260722"></script>
 </head>
 <body>
   <header class="site-header">
@@ -131,7 +131,10 @@
         </label>
         <button id="plot-gene" type="button">Plot gene</button>
       </div>
-      <div id="expression-plot" class="plot-shell">Enter a gene and choose a contrast.</div>
+      <div id="expression-plot-shell" class="plot-shell is-empty">
+        <span class="plot-placeholder">Enter a gene and choose a contrast.</span>
+        <div id="expression-plot"></div>
+      </div>
     </section>
 
     <section id="meta" class="tab-panel" aria-labelledby="meta-title">
@@ -164,7 +167,10 @@
           <tbody id="meta-body"></tbody>
         </table>
       </div>
-      <div id="forest-plot" class="plot-shell">Select a gene to draw its forest plot.</div>
+      <div id="forest-plot-shell" class="plot-shell is-empty">
+        <span class="plot-placeholder">Select a gene to draw its forest plot.</span>
+        <div id="forest-plot"></div>
+      </div>
     </section>
 
     <section id="downloads" class="tab-panel" aria-labelledby="downloads-title">

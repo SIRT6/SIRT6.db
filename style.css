@@ -368,13 +368,31 @@ tbody tr:hover {
 
 .plot-shell {
   min-height: 430px;
-  display: grid;
-  place-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fbfdfe;
   color: var(--muted);
   padding: 1rem;
+}
+
+.plot-shell.is-empty {
+  display: grid;
+  place-items: center;
+}
+
+.plot-shell.is-empty #expression-plot,
+.plot-shell.is-empty #forest-plot {
+  display: none;
+}
+
+.plot-shell:not(.is-empty) .plot-placeholder {
+  display: none;
+}
+
+#expression-plot,
+#forest-plot {
+  width: 100%;
+  min-height: 430px;
 }
 
 .downloads-grid {

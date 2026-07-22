@@ -124,6 +124,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loadIndex();
 });
 
+window.addEventListener("resize", () => {
+  [$("#expression-plot"), $("#forest-plot")].forEach((plot) => {
+    if (plot?.data) Plotly.Plots.resize(plot);
+  });
+});
+
 function dataUrl(path) {
   return rootUrl(`SIRT6_db/${path}`);
 }
@@ -471,7 +477,7 @@ async function plotGene() {
     const row = rows.find((item) => String(item.gene_id).toLowerCase() === String(geneId).toLowerCase());
     if (!row) {
       setStatus("gene-status", "Gene not in contrast");
-      $("#expression-plot").innerHTML = `No row found for ${escapeHtml(query)} in this contrast.`;
+      showPlotPlaceholder("expression-plot", `No row found for ${query} in this contrast.`);
       return;
     }
     const grouped = groupCountsByCondition(row);
@@ -483,7 +489,7 @@ async function plotGene() {
       jitter: 0.25,
       pointpos: 0
     }));
-    $("#expression-plot").innerHTML = "";
+    showPlot("expression-plot");
     Plotly.newPlot("expression-plot", traces, {
       title: `${geneMap.byId.get(String(row.gene_id)) || query} (${row.gene_id})`,
       margin: { t: 60, r: 25, b: 80, l: 80 },
@@ -497,7 +503,7 @@ async function plotGene() {
     setStatus("gene-status", "Plot rendered");
   } catch (error) {
     setStatus("gene-status", "Plot failed");
-    $("#expression-plot").innerHTML = `<span class="up">${escapeHtml(error.message)}</span>`;
+    showPlotPlaceholder("expression-plot", error.message, true);
   }
 }
 
@@ -559,7 +565,7 @@ async function plotForest(humanGeneId) {
     const effects = rows.map((row) => Number(row.log2FoldChange));
     const errors = rows.map((row) => 1.96 * Number(row.lfcSE));
     const pooledY = labels.length + 1;
-    $("#forest-plot").innerHTML = "";
+    showPlot("forest-plot");
     Plotly.newPlot("forest-plot", [
       {
         type: "scatter",
@@ -607,8 +613,26 @@ async function plotForest(humanGeneId) {
     setStatus("meta-status", "Forest plot rendered");
   } catch (error) {
     setStatus("meta-status", "Forest failed");
-    $("#forest-plot").innerHTML = `<span class="up">${escapeHtml(error.message)}</span>`;
+    showPlotPlaceholder("forest-plot", error.message, true);
   }
+}
+
+function showPlot(plotId) {
+  const plot = $(`#${plotId}`);
+  if (plot.data) Plotly.purge(plot);
+  plot.innerHTML = "";
+  plot.parentElement.classList.remove("is-empty");
+}
+
+function showPlotPlaceholder(plotId, message, isError = false) {
+  const plot = $(`#${plotId}`);
+  if (plot.data) Plotly.purge(plot);
+  plot.innerHTML = "";
+  const shell = plot.parentElement;
+  const placeholder = shell.querySelector(".plot-placeholder");
+  placeholder.textContent = message;
+  placeholder.classList.toggle("up", isError);
+  shell.classList.add("is-empty");
 }
 
 function renderDownloads() {

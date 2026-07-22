@@ -180,6 +180,14 @@ main {
   font-weight: 700;
 }
 
+.welcome-figure {
+  grid-column: 1 / -1;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 1.5rem;
+}
+
 .tab-panel {
   display: none;
   background: var(--panel);

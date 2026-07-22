@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIRT6.db</title>
-  <link rel="stylesheet" href="style.css?v=welcome-figure-20260722">
+  <link rel="stylesheet" href="style.css?v=home-figure-layout-20260722">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=welcome-figure-20260722"></script>
+  <script type="module" src="app.js?v=home-figure-layout-20260722"></script>
 </head>
 <body>
   <header class="site-header">
@@ -26,22 +26,24 @@
   </header>
 
   <main>
-    <section id="home" class="welcome active">
-      <div class="welcome-copy">
-        <p class="eyebrow">Companion database for SIRT6-targeted omics</p>
-        <h1>Cross-species transcriptomics of SIRT6 perturbation</h1>
-        <p>A curated collection of SIRT6 perturbation RNA-seq experiments across six species, with harmonized differential expression and a cross-species meta-analysis identifying conserved SIRT6-responsive genes.</p>
-        <p class="stat-line">6 species &middot; 29 studies &middot; 349 samples &middot; KO/OE/WT perturbations</p>
-      </div>
-      <div class="quick-links" aria-label="Main entry points">
-        <a href="#gene" data-tab-link="gene">Search a gene</a>
-        <a href="#de" data-tab-link="de">Browse DE results</a>
-        <a href="#meta" data-tab-link="meta">View conserved KO targets</a>
-      </div>
+    <div id="home" class="home-view active">
+      <section class="welcome">
+        <div class="welcome-copy">
+          <p class="eyebrow">Companion database for SIRT6-targeted omics</p>
+          <h1>Cross-species transcriptomics of SIRT6 perturbation</h1>
+          <p>A curated collection of SIRT6 perturbation RNA-seq experiments across six species, with harmonized differential expression and a cross-species meta-analysis identifying conserved SIRT6-responsive genes.</p>
+          <p class="stat-line">6 species &middot; 29 studies &middot; 349 samples &middot; KO/OE/WT perturbations</p>
+        </div>
+        <div class="quick-links" aria-label="Main entry points">
+          <a href="#gene" data-tab-link="gene">Search a gene</a>
+          <a href="#de" data-tab-link="de">Browse DE results</a>
+          <a href="#meta" data-tab-link="meta">View conserved KO targets</a>
+        </div>
+      </section>
       <img src="images/datasets_overview.png"
            alt="Sample counts, tissue and cell-type coverage, and genotype composition across the six species in SIRT6.db"
-           class="welcome-figure">
-    </section>
+           class="datasets-figure">
+    </div>
 
     <section id="datasets" class="tab-panel" aria-labelledby="datasets-title">
       <div class="section-heading">

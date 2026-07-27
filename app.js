@@ -565,8 +565,10 @@ async function plotForest(humanGeneId) {
     const effects = rows.map((row) => Number(row.log2FoldChange));
     const errors = rows.map((row) => 1.96 * Number(row.lfcSE));
     const pooledY = labels.length + 1;
-    const plotHeight = Math.max(500, (labels.length + 1) * 30 + 130);
-    const leftMargin = Math.min(320, Math.max(180, window.innerWidth * 0.28));
+    const plotHeight = Math.max(500, (labels.length + 1) * 26 + 120);
+    const longestLabelLength = Math.max(...labels.map((label) => label.length), 15);
+    const maxLeftMargin = window.innerWidth <= 860 ? window.innerWidth * 0.48 : 480;
+    const leftMargin = Math.min(maxLeftMargin, Math.max(180, longestLabelLength * 6.5));
     showPlot("forest-plot");
     Plotly.newPlot("forest-plot", [
       {
@@ -597,11 +599,12 @@ async function plotForest(humanGeneId) {
       title: `${summary.human_gene_symbol} conserved KO response`,
       height: plotHeight,
       margin: { t: 60, r: 30, b: 70, l: leftMargin },
-      xaxis: { title: "log2 fold change", zeroline: true },
+      xaxis: { title: "log2 fold change", zeroline: true, nticks: 6 },
       yaxis: {
         tickmode: "array",
         tickvals: [...labels.map((_, index) => index + 1), pooledY],
         ticktext: [...labels, "Pooled estimate"],
+        tickfont: { size: 11 },
         autorange: "reversed"
       },
       shapes: [{

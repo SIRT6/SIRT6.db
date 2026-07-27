@@ -114,7 +114,7 @@
       <div class="section-heading">
         <div>
           <h2 id="gene-title">Gene Explorer</h2>
-          <p>Plot DESeq2 median-of-ratios normalized counts for one gene in one contrast.</p>
+          <p>Compare a gene's expression between perturbation and control groups. Values are DESeq2-normalized counts on a log scale.</p>
         </div>
         <span id="gene-status" class="status">Ready</span>
       </div>
@@ -122,7 +122,7 @@
         <label>Species
           <select id="gene-species"></select>
         </label>
-        <label>Contrast
+        <label>Study
           <select id="gene-contrast"></select>
         </label>
         <label>Gene symbol or ID
@@ -140,11 +140,10 @@
       <div class="section-heading">
         <div>
           <h2 id="meta-title">Meta-analysis</h2>
-          <p>Conserved SIRT6 knockout response. The summary table is KO-specific and keyed by human ortholog.</p>
+          <p>Conserved signatures of SIRT6 knockout, pooled across species and mapped to human gene orthologs. Knockout studies only.</p>
         </div>
         <span id="meta-status" class="status">Load summary</span>
       </div>
-      <div class="notice">I<sup>2</sup> describes heterogeneity; low I<sup>2</sup> can also reflect low power and should not be read alone as a conservation score.</div>
       <div class="table-toolbar">
         <input id="meta-search" type="search" placeholder="Search human gene symbol">
         <button id="load-meta" type="button">Load meta-analysis</button>

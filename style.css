@@ -395,6 +395,12 @@ tbody tr:hover {
   min-height: 430px;
 }
 
+#meta {
+  width: min(1400px, calc(100vw - 2.4rem));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
 .downloads-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -435,6 +441,12 @@ footer {
 }
 
 @media (max-width: 860px) {
+  #meta {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+
   .header-inner {
     flex-wrap: wrap;
   }

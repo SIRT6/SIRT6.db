@@ -642,40 +642,120 @@ function showPlotPlaceholder(plotId, message, isError = false) {
 }
 
 function renderDownloads() {
-  const deLinks = DE_FILES.flatMap((path) => [path, path.replace("_deseq2.parquet", "_normalized_counts.parquet")]);
-  const groups = [
-    ["Differential expression and normalized counts", deLinks],
-    ["Expression matrices", EXPRESSION_FILES],
-    ["Meta-analysis", ["meta/meta_results_KO.parquet", "meta/input_for_meta.parquet"]],
-    ["Gene references", Object.keys(ORG).map((slug) => `genes/${slug}_genes.parquet`).concat(["genes/ortholog_map_1to1.parquet"])],
-    ["Indices and metadata", ["indices/datasets_table.parquet", "indices/experiment_stats.parquet", ...Object.keys(ORG).flatMap((slug) => [
-      `metadata/${slug}/samples.parquet`,
-      `metadata/${slug}/experiments.parquet`,
-      `metadata/${slug}/samples_to_experiment.parquet`
-    ])]],
-    ["Clients and walkthroughs", [
-      "SIRT6_db/utils/python_client.py",
-      "SIRT6_db/utils/R_client.R",
-      "SIRT6_db/utils/environment.yml",
-      "SIRT6_db_walkthrough_Python.ipynb",
-      "SIRT6_db_walkthrough_R.rmd",
-      "README.md",
-      "LICENSE"
-    ]]
-  ];
-  $("#downloads-grid").innerHTML = groups.map(([title, paths]) => `
-    <section class="download-group">
-      <h3>${escapeHtml(title)}</h3>
+  const deByOrganism = Object.keys(ORG).map((slug) => {
+    const contrasts = state.contrasts.filter((item) => item.slug === slug);
+    const studies = unique(contrasts.map((item) => item.gse));
+    const content = studies.map((gse) => `
+      <section class="download-study">
+        <h4>${escapeHtml(gse)}</h4>
+        <ul class="contrast-downloads">
+          ${contrasts.filter((item) => item.gse === gse).map((item) => {
+            const stratum = formatDownloadStratum(item.stratum);
+            const label = [item.gse, stratum, item.contrast].filter(Boolean).join(" — ");
+            return `
+              <li>
+                <span class="contrast-name">${escapeHtml(label)}</span>
+                <span class="download-actions">
+                  ${renderDownloadLink(item.path, "DE results")}
+                  ${renderDownloadLink(item.countsPath, "Normalized counts")}
+                </span>
+              </li>
+            `;
+          }).join("")}
+        </ul>
+      </section>
+    `).join("");
+    return renderDownloadDetails(ORG[slug], content);
+  }).join("");
+
+  const expressionByOrganism = Object.keys(ORG).map((slug) => {
+    const paths = EXPRESSION_FILES.filter((path) => path.split("/")[1] === slug);
+    const content = `<ul>${paths.map((path) => {
+      const accession = path.split("/").at(-1).replace(".parquet", "");
+      return `<li>${renderDownloadLink(path, accession)}</li>`;
+    }).join("")}</ul>`;
+    return renderDownloadDetails(ORG[slug], content);
+  }).join("");
+
+  const geneReferences = Object.entries(ORG).map(([slug, organism]) =>
+    `<li>${renderDownloadLink(`genes/${slug}_genes.parquet`, `${organism} gene annotations`)}</li>`
+  ).join("");
+
+  const metadataByOrganism = Object.entries(ORG).map(([slug, organism]) =>
+    renderDownloadDetails(organism, `
       <ul>
-        ${paths.map((path) => {
-          const href = path.startsWith("SIRT6_db/") || !path.includes("/") || path.endsWith(".ipynb") || path.endsWith(".rmd")
-            ? rootUrl(path)
-            : dataUrl(path);
-          return `<li><a href="${escapeAttr(href)}" download>${escapeHtml(path)}</a></li>`;
-        }).join("")}
+        <li>${renderDownloadLink(`metadata/${slug}/samples.parquet`, "Samples")}</li>
+        <li>${renderDownloadLink(`metadata/${slug}/experiments.parquet`, "Experiments")}</li>
+        <li>${renderDownloadLink(`metadata/${slug}/samples_to_experiment.parquet`, "Sample-to-experiment map")}</li>
+      </ul>
+    `)
+  ).join("");
+
+  $("#downloads-grid").innerHTML = `
+    <section class="download-group download-group-wide">
+      <h3>Differential expression and normalized counts</h3>
+      ${deByOrganism}
+    </section>
+    <section class="download-group download-group-wide">
+      <h3>Expression matrices</h3>
+      ${expressionByOrganism}
+    </section>
+    <section class="download-group">
+      <h3>Meta-analysis</h3>
+      <ul>
+        <li>${renderDownloadLink("meta/meta_results_KO.parquet", "SIRT6 knockout meta-analysis results")}</li>
+        <li>${renderDownloadLink("meta/input_for_meta.parquet", "Meta-analysis input data")}</li>
       </ul>
     </section>
-  `).join("");
+    <section class="download-group">
+      <h3>Gene references</h3>
+      <ul>
+        ${geneReferences}
+        <li>${renderDownloadLink("genes/ortholog_map_1to1.parquet", "One-to-one human ortholog map")}</li>
+      </ul>
+    </section>
+    <section class="download-group">
+      <h3>Indices and metadata</h3>
+      <ul>
+        <li>${renderDownloadLink("indices/datasets_table.parquet", "Datasets table")}</li>
+        <li>${renderDownloadLink("indices/experiment_stats.parquet", "Experiment statistics")}</li>
+      </ul>
+      ${metadataByOrganism}
+    </section>
+    <section class="download-group">
+      <h3>Clients and walkthroughs</h3>
+      <ul>
+        <li>${renderDownloadLink("SIRT6_db/utils/python_client.py", "Python client")}</li>
+        <li>${renderDownloadLink("SIRT6_db/utils/R_client.R", "R client")}</li>
+        <li>${renderDownloadLink("SIRT6_db/utils/environment.yml", "Conda environment")}</li>
+        <li>${renderDownloadLink("SIRT6_db_walkthrough_Python.ipynb", "Python walkthrough")}</li>
+        <li>${renderDownloadLink("SIRT6_db_walkthrough_R.rmd", "R walkthrough")}</li>
+        <li>${renderDownloadLink("README.md", "README")}</li>
+        <li>${renderDownloadLink("LICENSE", "MIT License")}</li>
+      </ul>
+    </section>
+  `;
+}
+
+function renderDownloadDetails(label, content) {
+  return `
+    <details class="download-details">
+      <summary>${escapeHtml(label)}</summary>
+      ${content}
+    </details>
+  `;
+}
+
+function renderDownloadLink(path, label) {
+  const href = path.startsWith("SIRT6_db/") || !path.includes("/") || path.endsWith(".ipynb") || path.endsWith(".rmd")
+    ? rootUrl(path)
+    : dataUrl(path);
+  return `<a href="${escapeAttr(href)}" download>${escapeHtml(label)}</a>`;
+}
+
+function formatDownloadStratum(stratum) {
+  if (!stratum) return "";
+  return stratum.replaceAll("__", "; ").replaceAll("_", " ");
 }
 
 async function loadVersion() {

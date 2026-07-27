@@ -407,6 +407,24 @@ tbody tr:hover {
   gap: 1rem;
 }
 
+.download-all-note {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d7ece7;
+  border-radius: 8px;
+  background: #eaf7f4;
+}
+
+.download-all-note p {
+  margin: 0.3rem 0 0.55rem;
+}
+
+.download-all-note code {
+  display: block;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 .download-group {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -414,8 +432,16 @@ tbody tr:hover {
   background: #fbfdfe;
 }
 
+.download-group-wide {
+  grid-column: 1 / -1;
+}
+
 .download-group h3 {
   margin: 0 0 0.65rem;
+}
+
+.download-group h4 {
+  margin: 0.8rem 0 0.35rem;
 }
 
 .download-group ul {
@@ -425,6 +451,48 @@ tbody tr:hover {
 
 .download-group li {
   margin: 0.25rem 0;
+}
+
+.download-group a,
+.download-actions,
+.contrast-name {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.download-details {
+  border-top: 1px solid var(--line);
+  padding: 0.45rem 0;
+}
+
+.download-details summary {
+  cursor: pointer;
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.download-study {
+  padding-left: 1rem;
+}
+
+.contrast-downloads {
+  list-style: none;
+  padding-left: 0 !important;
+}
+
+.contrast-downloads li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem 1rem;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
 }
 
 .prose {
@@ -467,6 +535,10 @@ footer {
 
   .welcome,
   .downloads-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contrast-downloads li {
     grid-template-columns: 1fr;
   }
 

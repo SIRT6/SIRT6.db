@@ -226,7 +226,7 @@ main {
   align-items: center;
   min-height: 1.9rem;
   padding: 0.25rem 0.6rem;
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--accent-dark);
   background: #e7f5f2;
   font-size: 0.85rem;
@@ -236,7 +236,6 @@ main {
 #de-status {
   min-width: 10rem;
   padding: 0.65rem 0.85rem;
-  border-radius: 8px;
   line-height: 1.5;
   white-space: pre-line;
   flex-shrink: 0;

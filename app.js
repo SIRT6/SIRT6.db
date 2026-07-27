@@ -720,12 +720,12 @@ function renderDownloads() {
     </section>
     <section class="download-group">
       <h3>Clients and walkthroughs</h3>
-      <p><strong>Programmatic access.</strong> To load the data in R or Python, <a href="https://github.com/SIRT6/SIRT6.db" target="_blank" rel="noopener noreferrer">download the full database</a> (<code>git clone https://github.com/SIRT6/SIRT6.db.git</code>), then use the client for your language. Requires the Conda environment.</p>
+      <p><strong>Programmatic access.</strong> To load the data in R or Python, <a href="https://github.com/SIRT6/SIRT6.db" target="_blank" rel="noopener noreferrer">download the full database</a>, then use the client for your language. Requires the Conda environment (<code>conda env create -f environment.yml</code>).</p>
       <ul>
-        <li>${renderDownloadRichLink("SIRT6_db/utils/R_client.R", "R client", "R_client.R")} — returns SummarizedExperiment objects</li>
-        <li>${renderDownloadRichLink("SIRT6_db/utils/python_client.py", "Python client", "python_client.py")} — returns AnnData objects</li>
-        <li>${renderDownloadRichLink("SIRT6_db/utils/environment.yml", "Conda environment", "environment.yml")}</li>
-        <li><strong>Walkthrough notebooks:</strong> ${renderDownloadLink("SIRT6_db_walkthrough_R.rmd", "R")} ${renderDownloadLink("SIRT6_db_walkthrough_Python.ipynb", "Python")}</li>
+        <li>${renderDownloadRichLink("SIRT6_db/utils/R_client.R", "R client")} — returns SummarizedExperiment objects</li>
+        <li>${renderDownloadRichLink("SIRT6_db/utils/python_client.py", "Python client")} — returns AnnData objects</li>
+        <li>${renderDownloadRichLink("SIRT6_db/utils/environment.yml", "Conda environment")}</li>
+        <li><strong>Walkthrough notebooks:</strong> ${renderDownloadLink("SIRT6_db_walkthrough_R.rmd", "[R]")} ${renderDownloadLink("SIRT6_db_walkthrough_Python.ipynb", "[Python]")}</li>
       </ul>
     </section>
   `;
@@ -745,8 +745,8 @@ function renderDownloadLink(path, label) {
   return `<a href="${escapeAttr(href)}" download>${escapeHtml(label)}</a>`;
 }
 
-function renderDownloadRichLink(path, label, filename) {
-  return `<a href="${escapeAttr(downloadHref(path))}" download><strong>${escapeHtml(label)}</strong> (<code>${escapeHtml(filename)}</code>)</a>`;
+function renderDownloadRichLink(path, label) {
+  return `<a href="${escapeAttr(downloadHref(path))}" download><strong>${escapeHtml(label)}</strong></a>`;
 }
 
 function downloadHref(path) {

@@ -708,18 +708,14 @@ function renderDownloads() {
       </ul>
     </section>
     <section class="download-group">
-      <h3>Gene references</h3>
+      <h3>Gene ID - gene symbol and ortholog table</h3>
       <ul>
         ${geneReferences}
         <li>${renderDownloadLink("genes/ortholog_map_1to1.parquet", "One-to-one human ortholog map")}</li>
       </ul>
     </section>
     <section class="download-group">
-      <h3>Indices and metadata</h3>
-      <ul>
-        <li>${renderDownloadLink("indices/datasets_table.parquet", "Datasets table")}</li>
-        <li>${renderDownloadLink("indices/experiment_stats.parquet", "Experiment statistics")}</li>
-      </ul>
+      <h3>Metadata</h3>
       ${metadataByOrganism}
     </section>
     <section class="download-group">
@@ -730,8 +726,6 @@ function renderDownloads() {
         <li>${renderDownloadLink("SIRT6_db/utils/environment.yml", "Conda environment")}</li>
         <li>${renderDownloadLink("SIRT6_db_walkthrough_Python.ipynb", "Python walkthrough")}</li>
         <li>${renderDownloadLink("SIRT6_db_walkthrough_R.rmd", "R walkthrough")}</li>
-        <li>${renderDownloadLink("README.md", "README")}</li>
-        <li>${renderDownloadLink("LICENSE", "MIT License")}</li>
       </ul>
     </section>
   `;

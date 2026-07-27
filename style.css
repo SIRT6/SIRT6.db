@@ -239,6 +239,8 @@ main {
   line-height: 1.5;
   white-space: pre-line;
   flex-shrink: 0;
+  justify-content: center;
+  text-align: center;
 }
 
 .muted {

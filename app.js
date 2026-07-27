@@ -565,7 +565,7 @@ async function plotForest(humanGeneId) {
     const effects = rows.map((row) => Number(row.log2FoldChange));
     const errors = rows.map((row) => 1.96 * Number(row.lfcSE));
     const pooledY = labels.length + 1;
-    const plotHeight = Math.max(500, (labels.length + 1) * 44 + 150);
+    const plotHeight = Math.max(500, (labels.length + 1) * 30 + 130);
     const leftMargin = Math.min(320, Math.max(180, window.innerWidth * 0.28));
     showPlot("forest-plot");
     Plotly.newPlot("forest-plot", [

@@ -29,13 +29,13 @@
     <section id="home" class="welcome active">
       <div class="welcome-copy">
         <h1>Cross-species transcriptomics of SIRT6 perturbation</h1>
-        <p>A curated collection of SIRT6 perturbation RNA-seq experiments across six species, with harmonized differential expression and a cross-species meta-analysis identifying conserved SIRT6-responsive genes.</p>
+        <p>Find out what happens to your gene of interest when SIRT6 is switched off or overexpressed - measured across six species, from single studies to a combined cross-species meta-analysis.</p>
         <p class="stat-line">6 species &middot; 29 studies &middot; 349 samples &middot; KO/OE/WT perturbations</p>
       </div>
       <div class="quick-links" aria-label="Main entry points">
         <a href="#gene" data-tab-link="gene">Search a gene</a>
         <a href="#de" data-tab-link="de">Browse DE results</a>
-        <a href="#meta" data-tab-link="meta">View conserved KO targets</a>
+        <a href="#meta" data-tab-link="meta">View conserved SIRT6 KO targets</a>
       </div>
       <img src="images/organisms.svg"
            alt="The six species represented in SIRT6.db"
@@ -73,15 +73,15 @@
       <div class="section-heading">
         <div>
           <h2 id="de-title">DE Results</h2>
-          <p>Load one DESeq2 contrast at a time. Gene symbols are resolved from the matching species gene table.</p>
+          <p>Browse differential expression results one contrast at a time.</p>
         </div>
-        <span id="de-status" class="status">Choose a contrast</span>
+        <span id="de-status" class="status">Choose a study</span>
       </div>
       <div class="control-grid">
         <label>Species
           <select id="de-species"></select>
         </label>
-        <label>Genotype / stratum
+        <label>Study
           <select id="de-stratum"></select>
         </label>
         <label>Contrast

@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIRT6.db</title>
-  <link rel="stylesheet" href="style.css?v=methods-copy-20260728">
+  <link rel="stylesheet" href="style.css?v=methods-panel-20260728">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <script type="module" src="app.js?v=methods-copy-20260728"></script>
+  <script type="module" src="app.js?v=methods-panel-20260728"></script>
 </head>
 <body>
   <header class="site-header">
@@ -188,7 +188,7 @@
 
     <section id="methods" class="tab-panel prose" aria-labelledby="methods-title">
       <h2 id="methods-title">Methods</h2>
-      <p><strong>Data and preprocessing.</strong> Bulk RNA-seq datasets for six species - <em>Homo sapiens</em>, <em>Mus musculus</em>, <em>Rattus norvegicus</em>, <em>Macaca fascicularis</em>, <em>Sus scrofa</em>, and <em>Drosophila melanogaster</em> — were retrieved from public repositories (NCBI GEO and GSA-Human). Raw reads were processed with the <code>nf-core/rnaseq</code> pipeline: quality assessment with FastQC, adapter and quality trimming with Trim Galore! (Phred &lt; 20), and gene-level quantification by Salmon pseudo-alignment against each species' Ensembl reference genome.</p>
+      <p><strong>Data and preprocessing.</strong> Bulk RNA-seq datasets for six species - <em>Homo sapiens</em>, <em>Mus musculus</em>, <em>Rattus norvegicus</em>, <em>Macaca fascicularis</em>, <em>Sus scrofa</em>, and <em>Drosophila melanogaster</em> - were retrieved from public repositories (NCBI GEO and GSA-Human). Raw reads were processed with the <code>nf-core/rnaseq</code> pipeline: quality assessment with FastQC, adapter and quality trimming with Trim Galore! (Phred &lt; 20), and gene-level quantification by Salmon pseudo-alignment against each species' Ensembl reference genome.</p>
       <p><strong>Differential expression.</strong> Differential expression was computed with DESeq2 for each species and comparison, comparing each perturbation against wild-type controls and adjusting for sex, age, and strain where available. Experiments were stratified by treatment, cell type, tissue, or condition where applicable. Low-count genes were filtered per contrast (a gene was kept only if, in both groups, it had ≥10 counts in at least half the samples, or two samples, whichever was larger). Genes were called differentially expressed at FDR &lt; 0.05 and |log₂FC| &gt; 0.58.</p>
       <p><strong>Cross-species meta-analysis.</strong> Genes were harmonized across species using 1:1 human orthologs from Ensembl (v115, via <code>biomaRt</code>), keeping only protein-coding orthologs. A three-level random-effects meta-analysis (<code>metafor::rma.mv()</code>) was then fitted, with species and experiment as nested random effects and a phylogenetic correlation matrix derived from divergence times (TimeTree). The knockout meta-analysis covered 13,359 orthologous genes across 39 experiments in all six species; genes were required to appear in at least three species and two experiments.</p>
     </section>

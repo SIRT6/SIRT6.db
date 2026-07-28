@@ -496,7 +496,13 @@ tbody tr:hover {
   gap: 0.35rem 0.75rem;
 }
 
-.prose {
+#methods {
+  max-width: 780px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#methods p {
   max-width: 720px;
 }
 

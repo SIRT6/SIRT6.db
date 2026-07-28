@@ -767,7 +767,6 @@ async function loadVersion() {
     const version = (await readText("SIRT6_db/version.txt")).trim();
     $("#db-version").textContent = `v${version}`;
     $("#footer-version").textContent = `Database v${version}`;
-    $("#license-link").href = rootUrl("LICENSE");
   } catch {
     $("#db-version").textContent = "version unavailable";
   }

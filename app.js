@@ -250,12 +250,14 @@ function showTab(tab) {
   $("#home").classList.remove("active");
   $$(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === target));
   $$("[data-tab]").forEach((link) => link.classList.toggle("active", link.dataset.tab === target));
+  $("footer").classList.toggle("methods-aligned", target === "methods");
 }
 
 function showHome() {
   $("#home").classList.add("active");
   $$(".tab-panel").forEach((panel) => panel.classList.remove("active"));
   $$("[data-tab]").forEach((link) => link.classList.remove("active"));
+  $("footer").classList.remove("methods-aligned");
 }
 
 function bindControls() {

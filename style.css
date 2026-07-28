@@ -515,6 +515,10 @@ footer {
   justify-content: space-between;
 }
 
+footer.methods-aligned {
+  max-width: 780px;
+}
+
 @media (max-width: 860px) {
   #meta {
     width: 100%;

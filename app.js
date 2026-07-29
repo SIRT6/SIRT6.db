@@ -498,7 +498,15 @@ async function plotGene() {
       title: "Normalized counts (DESeq2, log scale)",
       type: "log",
       dtick: 1,
-      minor: { ticks: "outside" }
+      showgrid: true,
+      gridcolor: "#e5e7eb",
+      gridwidth: 1,
+      minor: {
+        ticks: "",
+        ticklen: 0,
+        showticklabels: false,
+        showgrid: false
+      }
     };
     if (positiveValues.length) {
       let lowerDecade = Math.floor(Math.log10(Math.min(...positiveValues)));

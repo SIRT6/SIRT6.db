@@ -183,20 +183,6 @@ se <- db$get_summarized_experiment_object(data)
 See [`SIRT6_db_walkthrough_R.rmd`](SIRT6_db_walkthrough_R.rmd) for the full
 workflow.
 
-## Run the website locally
-
-Because the site uses JavaScript modules and `fetch()` to load Parquet files,
-serve the repository over HTTP rather than opening `index.html` directly:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then open <http://localhost:8000> in a browser.
-
-The local site still needs internet access for the Plotly, hyparquet, and
-hyparquet-compressors packages loaded from public CDNs.
-
 ## Methods summary
 
 Raw reads were processed with the `nf-core/rnaseq` pipeline, including FastQC,

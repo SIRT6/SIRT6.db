@@ -486,7 +486,7 @@ async function plotGene() {
     const traces = Object.entries(grouped).map(([condition, values]) => ({
       type: "box",
       name: condition,
-      y: values.filter((value) => value > 0),
+      y: values,
       boxpoints: "all",
       jitter: 0.25,
       pointpos: 0
@@ -496,9 +496,9 @@ async function plotGene() {
       title: `${geneMap.byId.get(String(row.gene_id)) || query} (${row.gene_id})`,
       margin: { t: 60, r: 25, b: 80, l: 80 },
       yaxis: {
-        title: "Normalized counts (DESeq2, log10 scale)",
+        title: "Normalized counts (DESeq2, log scale)",
         type: "log",
-        rangemode: "tozero"
+        dtick: 1
       },
       xaxis: { title: "Condition" }
     }, { responsive: true, displaylogo: false });

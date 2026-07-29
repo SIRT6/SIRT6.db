@@ -498,7 +498,11 @@ async function plotGene() {
       yaxis: {
         title: "Normalized counts (DESeq2, log scale)",
         type: "log",
-        dtick: 1
+        dtick: "D2",
+        minor: {
+          showticklabels: true,
+          ticks: "outside"
+        }
       },
       xaxis: { title: "Condition" }
     }, { responsive: true, displaylogo: false });

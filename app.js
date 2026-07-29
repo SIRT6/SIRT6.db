@@ -491,19 +491,29 @@ async function plotGene() {
       jitter: 0.25,
       pointpos: 0
     }));
+    const positiveValues = Object.values(grouped)
+      .flat()
+      .filter((value) => Number.isFinite(value) && value > 0);
+    const yaxis = {
+      title: "Normalized counts (DESeq2, log scale)",
+      type: "log",
+      dtick: 1,
+      minor: { ticks: "outside" }
+    };
+    if (positiveValues.length) {
+      let lowerDecade = Math.floor(Math.log10(Math.min(...positiveValues)));
+      let upperDecade = Math.ceil(Math.log10(Math.max(...positiveValues)));
+      if (lowerDecade === upperDecade) {
+        lowerDecade -= 1;
+        upperDecade += 1;
+      }
+      yaxis.range = [lowerDecade - 0.15, upperDecade + 0.15];
+    }
     showPlot("expression-plot");
     Plotly.newPlot("expression-plot", traces, {
       title: `${geneMap.byId.get(String(row.gene_id)) || query} (${row.gene_id})`,
       margin: { t: 60, r: 25, b: 80, l: 80 },
-      yaxis: {
-        title: "Normalized counts (DESeq2, log scale)",
-        type: "log",
-        dtick: "D2",
-        minor: {
-          showticklabels: true,
-          ticks: "outside"
-        }
-      },
+      yaxis,
       xaxis: { title: "Condition" }
     }, { responsive: true, displaylogo: false });
     setStatus("gene-status", "Plot rendered");

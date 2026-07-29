@@ -180,13 +180,39 @@ main {
   font-weight: 700;
 }
 
-.welcome-figure {
+.welcome-figures {
   grid-column: 1 / -1;
   max-width: 700px;
   width: 100%;
-  height: auto;
-  display: block;
+  min-height: 110px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  align-items: end;
+  justify-items: center;
   margin: 1.5rem auto 0;
+}
+
+.organism-icon {
+  display: block;
+  width: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.organism-icon-human {
+  height: 110px;
+}
+
+.organism-icon-macaca,
+.organism-icon-mouse,
+.organism-icon-pig,
+.organism-icon-drosophila {
+  height: 74px;
+}
+
+.organism-icon-rat {
+  height: 87px;
 }
 
 .tab-panel {
